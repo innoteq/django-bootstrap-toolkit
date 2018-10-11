@@ -5,7 +5,6 @@ from math import floor
 from django.forms import BaseForm
 from django.forms.forms import BoundField
 from django.forms.widgets import TextInput, CheckboxInput, CheckboxSelectMultiple, RadioSelect
-from django.template import Context
 from django.template.loader import get_template
 from django import template
 from django.conf import settings
@@ -96,24 +95,26 @@ def as_bootstrap(form_or_field, layout='vertical,false'):
 
     if isinstance(form_or_field, BaseForm):
         return get_template("bootstrap_toolkit/form.html").render(
-            Context({
+            {
                 'form': form_or_field,
                 'layout': layout,
                 'float': bootstrap_float,
-            })
+            }
         )
     elif isinstance(form_or_field, BoundField):
         return get_template("bootstrap_toolkit/field.html").render(
-            Context({
+            {
                 'field': form_or_field,
                 'layout': layout,
                 'float': bootstrap_float,
-            })
+            }
         )
     else:
         # Display the default
-        return settings.TEMPLATE_STRING_IF_INVALID
-
+        for conf in settings.TEMPLATES:
+            options = conf.get('OPTIONS', {})
+            string_if_invalid = options.get('string_if_invalid', '')
+            return string_if_invalid
 
 @register.filter
 def is_disabled(field):
@@ -174,7 +175,7 @@ def pagination(page, pages_to_show=11):
     Generate Bootstrap pagination links from a page object
     """
     context = get_pagination_context(page, pages_to_show)
-    return get_template("bootstrap_toolkit/pagination.html").render(Context(context))
+    return get_template("bootstrap_toolkit/pagination.html").render(context)
 
 
 @register.filter
