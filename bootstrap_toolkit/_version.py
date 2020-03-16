@@ -1,1 +1,1 @@
-__version__ = '2.15.0+innoteq1'
+__version__ = '2.15.0+innoteq2'
